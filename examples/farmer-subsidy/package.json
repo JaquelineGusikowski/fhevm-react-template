@@ -1,0 +1,22 @@
+{
+  "name": "farmer-subsidy-example",
+  "version": "1.0.0",
+  "description": "Privacy-preserving farmer subsidy system using FHEVM SDK",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.js --network sepolia",
+    "interact": "hardhat run scripts/interact.js --network sepolia"
+  },
+  "dependencies": {
+    "fhevm-sdk": "workspace:*",
+    "@fhevm/solidity": "latest",
+    "ethers": "^6.9.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.0",
+    "dotenv": "^16.3.1"
+  }
+}
