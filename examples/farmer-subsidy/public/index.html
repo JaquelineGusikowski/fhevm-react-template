@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Farmer Subsidy System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .status-bar {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-item h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .status-item p {
+            color: #7f8c8d;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .wallet-info {
+            background: rgba(46, 204, 113, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2ecc71;
+        }
+
+        .distribution-info {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .distribution-info h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .distribution-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+        }
+
+        .privacy-notice {
+            background: rgba(155, 89, 182, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #9b59b6;
+            margin-bottom: 30px;
+        }
+
+        .privacy-notice h3 {
+            color: #8e44ad;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .status-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .distribution-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌾 Anonymous Farmer Subsidy System</h1>
+            <p>Privacy-Preserving Agricultural Support Distribution</p>
+        </div>
+
+        <div class="privacy-notice">
+            <h3>🔒 Privacy Protection</h3>
+            <p>This system uses Fully Homomorphic Encryption (FHE) to protect your farm data. Your income, farm size, and yield information remain completely private while ensuring fair subsidy distribution.</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 30px;">
+            <h2>⚙️ Environment Setup & Deployment</h2>
+            <div class="alert alert-info">
+                <strong>Quick Deploy to Sepolia:</strong>
+                <ol style="margin-top: 10px; margin-left: 20px;">
+                    <li>Create <code>.env</code> file with your private key and RPC URL</li>
+                    <li>Run: <code>npm install</code></li>
+                    <li>Run: <code>npm run compile</code></li>
+                    <li>Run: <code>npm run deploy</code></li>
+                    <li>Update CONTRACT_ADDRESS in this file (line 320)</li>
+                </ol>
+            </div>
+            <button class="btn" onclick="showEnvSetup()">Show .env Setup Instructions</button>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <h3 id="walletStatus">Wallet Status</h3>
+                <p id="walletAddress">Not Connected</p>
+            </div>
+            <div class="status-item">
+                <h3 id="networkStatus">Network</h3>
+                <p id="networkName">-</p>
+            </div>
+            <div class="status-item">
+                <h3 id="registrationStatus">Registration</h3>
+                <p id="farmerStatus">Not Registered</p>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 30px;" id="connectCard">
+            <h2>🔗 Connect Your Wallet</h2>
+            <p style="margin-bottom: 20px; color: #7f8c8d;">Connect your MetaMask wallet to interact with the Farmer Subsidy System</p>
+            <button class="btn" onclick="connectWallet()">Connect MetaMask Wallet</button>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>👨‍🌾 Farmer Registration</h2>
+                <div id="registrationForm">
+                    <div class="form-group">
+                        <label for="farmSize">Farm Size (hectares):</label>
+                        <input type="number" id="farmSize" placeholder="Enter your farm size in hectares" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="cropYield">Annual Crop Yield (tons):</label>
+                        <input type="number" id="cropYield" placeholder="Enter your annual crop yield" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="incomeLevel">Annual Income Level (USD):</label>
+                        <input type="number" id="incomeLevel" placeholder="Enter your annual income" min="0">
+                    </div>
+                    <button class="btn" onclick="registerFarmer()">Register for Subsidy Program</button>
+                </div>
+
+                <div class="wallet-info" id="walletInfo" style="display: none;">
+                    <h3>Wallet Information</h3>
+                    <p><strong>Address:</strong> <span id="connectedWallet"></span></p>
+                    <p><strong>Balance:</strong> <span id="walletBalance"></span> ETH</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Distribution Information</h2>
+                <div class="distribution-info">
+                    <h3>Current Distribution Period</h3>
+                    <div class="distribution-stats">
+                        <div class="stat-item">
+                            <strong>Period #</strong>
+                            <p id="currentPeriod">-</p>
+                        </div>
+                        <div class="stat-item">
+                            <strong>Total Budget</strong>
+                            <p id="totalBudget">-</p>
+                        </div>
+                        <div class="stat-item">
+                            <strong>Distributed</strong>
+                            <p id="distributedAmount">-</p>
+                        </div>
+                        <div class="stat-item">
+                            <strong>Beneficiaries</strong>
+                            <p id="beneficiaryCount">-</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(231, 76, 60, 0.1); border-radius: 8px;">
+                        <strong>Status: </strong><span id="periodStatus" style="color: #e74c3c;">Inactive</span>
+                    </div>
+                </div>
+
+                <div id="adminPanel" style="display: none; margin-top: 20px; padding: 20px; background: rgba(52, 152, 219, 0.1); border-radius: 10px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px;">👨‍💼 Admin Panel</h3>
+                    <div class="form-group">
+                        <label for="budgetAmount">Distribution Budget (ETH):</label>
+                        <input type="number" id="budgetAmount" placeholder="e.g., 1" step="0.01" min="0.01" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">Duration (days):</label>
+                        <input type="number" id="duration" placeholder="e.g., 30" min="1" value="30">
+                    </div>
+                    <button class="btn btn-secondary" onclick="startDistributionPeriod()">Start Distribution Period</button>
+                </div>
+
+                <div class="form-group" style="margin-top: 30px;">
+                    <button class="btn btn-secondary" onclick="checkSubsidyStatus()">Check My Subsidy Status</button>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn" onclick="refreshData()">Refresh Information</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="messages"></div>
+    </div>
+
+    <script>
+        const CONTRACT_ADDRESS = "0xadF5A4d7BCa545AB9ce4b852d7952A54B1bEab3D";
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"uint256","name":"_initialBudget","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"HandlesAlreadySavedForRequestID","type":"error"},{"inputs":[],"name":"InvalidKMSSignatures","type":"error"},{"inputs":[],"name":"NoHandleFoundForRequestID","type":"error"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"requestID","type":"uint256"}],"name":"DecryptionFulfilled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"period","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalDistributed","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"beneficiaries","type":"uint256"}],"name":"DistributionCompleted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"period","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"budget","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"startTime","type":"uint256"}],"name":"DistributionPeriodStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"farmer","type":"address"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"FarmerRegistered","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"farmer","type":"address"},{"indexed":false,"internalType":"uint256","name":"period","type":"uint256"}],"name":"SubsidyCalculated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"farmer","type":"address"},{"indexed":false,"internalType":"uint256","name":"period","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"SubsidyDistributed","type":"event"},{"inputs":[{"internalType":"address","name":"_farmer","type":"address"}],"name":"calculateSubsidyAmount","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"completeDistributionPeriod","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentDistributionPeriod","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"distributionPeriods","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"totalBudget","type":"uint256"},{"internalType":"uint256","name":"distributedAmount","type":"uint256"},{"internalType":"uint256","name":"beneficiaryCount","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"distributionCompleted","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"encryptedSubsidyAmounts","outputs":[{"internalType":"euint64","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"farmers","outputs":[{"internalType":"euint32","name":"encryptedFarmSize","type":"bytes32"},{"internalType":"euint32","name":"encryptedCropYield","type":"bytes32"},{"internalType":"euint64","name":"encryptedIncomeLevel","type":"bytes32"},{"internalType":"bool","name":"isRegistered","type":"bool"},{"internalType":"bool","name":"hasReceivedSubsidy","type":"bool"},{"internalType":"uint256","name":"registrationTime","type":"uint256"},{"internalType":"address","name":"farmerAddress","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getCurrentPeriodInfo","outputs":[{"internalType":"uint256","name":"period","type":"uint256"},{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"totalBudget","type":"uint256"},{"internalType":"uint256","name":"distributedAmount","type":"uint256"},{"internalType":"uint256","name":"beneficiaryCount","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"distributionCompleted","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_farmer","type":"address"}],"name":"getFarmerProfile","outputs":[{"internalType":"bool","name":"isRegistered","type":"bool"},{"internalType":"bool","name":"hasReceivedSubsidy","type":"bool"},{"internalType":"uint256","name":"registrationTime","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_period","type":"uint256"}],"name":"getPeriodHistory","outputs":[{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"totalBudget","type":"uint256"},{"internalType":"uint256","name":"distributedAmount","type":"uint256"},{"internalType":"uint256","name":"beneficiaryCount","type":"uint256"},{"internalType":"bool","name":"distributionCompleted","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getTotalRegisteredFarmers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"requestId","type":"uint256"},{"internalType":"uint64","name":"subsidyAmount","type":"uint64"},{"internalType":"bytes","name":"signatures","type":"bytes"}],"name":"processSubsidyDistribution","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint32","name":"_farmSize","type":"uint32"},{"internalType":"uint32","name":"_cropYield","type":"uint32"},{"internalType":"uint64","name":"_incomeLevel","type":"uint64"}],"name":"registerFarmer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"registeredFarmers","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_farmer","type":"address"}],"name":"requestSubsidyDecryption","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_budget","type":"uint256"},{"internalType":"uint256","name":"_duration","type":"uint256"}],"name":"startNewDistributionPeriod","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"subsidyAuthority","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSubsidyBudget","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawUnusedFunds","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
+
+        let provider;
+        let signer;
+        let contract;
+        let userAccount;
+
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+                    if (accounts.length === 0) {
+                        showMessage('No accounts found. Please unlock MetaMask.', 'error');
+                        return;
+                    }
+
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    signer = provider.getSigner();
+                    userAccount = await signer.getAddress();
+
+                    // Check network
+                    const network = await provider.getNetwork();
+                    if (network.chainId !== 11155111) {
+                        showMessage('Please switch to Sepolia testnet in MetaMask!', 'error');
+                        try {
+                            await window.ethereum.request({
+                                method: 'wallet_switchEthereumChain',
+                                params: [{ chainId: '0xaa36a7' }], // Sepolia chainId in hex
+                            });
+                        } catch (switchError) {
+                            if (switchError.code === 4902) {
+                                showMessage('Sepolia network not found. Please add it manually.', 'error');
+                            }
+                            return;
+                        }
+                    }
+
+                    contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+                    updateWalletInfo();
+                    checkFarmerStatus();
+                    await loadDistributionInfo();
+                    await checkAdminStatus();
+
+                    // Hide connect card
+                    document.getElementById('connectCard').style.display = 'none';
+
+                    showMessage('✅ Wallet connected successfully!', 'success');
+                } catch (error) {
+                    console.error('Error connecting wallet:', error);
+                    if (error.code === 4001) {
+                        showMessage('Connection rejected. Please approve the connection in MetaMask.', 'error');
+                    } else if (error.code === -32002) {
+                        showMessage('Connection request pending. Please check MetaMask.', 'info');
+                    } else {
+                        showMessage('Failed to connect wallet: ' + error.message, 'error');
+                    }
+                }
+            } else {
+                showMessage('❌ Please install MetaMask to use this application!', 'error');
+            }
+        }
+
+        async function updateWalletInfo() {
+            if (userAccount) {
+                document.getElementById('walletAddress').textContent = userAccount.substring(0, 6) + '...' + userAccount.substring(38);
+                document.getElementById('connectedWallet').textContent = userAccount;
+                document.getElementById('walletStatus').textContent = 'Connected';
+
+                const balance = await provider.getBalance(userAccount);
+                document.getElementById('walletBalance').textContent = ethers.utils.formatEther(balance);
+
+                const network = await provider.getNetwork();
+                document.getElementById('networkName').textContent = network.name;
+
+                document.getElementById('walletInfo').style.display = 'block';
+            }
+        }
+
+        async function checkFarmerStatus() {
+            if (!contract || !userAccount) return;
+
+            try {
+                const profile = await contract.getFarmerProfile(userAccount);
+                const isRegistered = profile[0];
+                const hasReceivedSubsidy = profile[1];
+
+                if (isRegistered) {
+                    document.getElementById('farmerStatus').textContent = hasReceivedSubsidy ? 'Registered (Subsidy Received)' : 'Registered (Pending Subsidy)';
+                    document.getElementById('registrationStatus').textContent = 'Registered ✓';
+                } else {
+                    document.getElementById('farmerStatus').textContent = 'Not Registered';
+                    document.getElementById('registrationStatus').textContent = 'Not Registered';
+                }
+            } catch (error) {
+                console.error('Error checking farmer status:', error);
+            }
+        }
+
+        async function loadDistributionInfo() {
+            if (!contract) return;
+
+            try {
+                const periodInfo = await contract.getCurrentPeriodInfo();
+                const isActive = periodInfo[6];
+
+                document.getElementById('currentPeriod').textContent = periodInfo[0].toString();
+                document.getElementById('totalBudget').textContent = ethers.utils.formatEther(periodInfo[3]) + ' ETH';
+                document.getElementById('distributedAmount').textContent = ethers.utils.formatEther(periodInfo[4]) + ' ETH';
+                document.getElementById('beneficiaryCount').textContent = periodInfo[5].toString();
+
+                // Update status
+                const statusElement = document.getElementById('periodStatus');
+                if (isActive) {
+                    statusElement.textContent = 'Active ✓';
+                    statusElement.style.color = '#27ae60';
+                } else {
+                    statusElement.textContent = 'Inactive ✗';
+                    statusElement.style.color = '#e74c3c';
+                }
+
+            } catch (error) {
+                console.error('Error loading distribution info:', error);
+            }
+        }
+
+        async function checkAdminStatus() {
+            if (!contract || !userAccount) return;
+
+            try {
+                const authority = await contract.subsidyAuthority();
+                if (authority.toLowerCase() === userAccount.toLowerCase()) {
+                    document.getElementById('adminPanel').style.display = 'block';
+                    showMessage('👨‍💼 Admin panel unlocked', 'info');
+                }
+            } catch (error) {
+                console.error('Error checking admin status:', error);
+            }
+        }
+
+        async function startDistributionPeriod() {
+            if (!contract || !userAccount) {
+                showMessage('Please connect your wallet first!', 'error');
+                return;
+            }
+
+            const budgetAmount = document.getElementById('budgetAmount').value;
+            const duration = document.getElementById('duration').value;
+
+            if (!budgetAmount || !duration) {
+                showMessage('Please fill in all fields!', 'error');
+                return;
+            }
+
+            try {
+                showMessage('Starting distribution period... Please confirm the transaction.', 'info');
+
+                const budgetWei = ethers.utils.parseEther(budgetAmount);
+                const durationSeconds = parseInt(duration) * 24 * 60 * 60; // Convert days to seconds
+
+                const tx = await contract.startNewDistributionPeriod(budgetWei, durationSeconds);
+
+                showMessage('Transaction submitted. Waiting for confirmation...', 'info');
+                await tx.wait();
+
+                showMessage('✅ Distribution period started successfully!', 'success');
+
+                // Refresh info
+                loadDistributionInfo();
+
+            } catch (error) {
+                console.error('Start distribution error:', error);
+                showMessage('Failed to start distribution: ' + error.message, 'error');
+            }
+        }
+
+        async function registerFarmer() {
+            if (!contract || !userAccount) {
+                showMessage('Please connect your wallet first!', 'error');
+                return;
+            }
+
+            const farmSize = document.getElementById('farmSize').value;
+            const cropYield = document.getElementById('cropYield').value;
+            const incomeLevel = document.getElementById('incomeLevel').value;
+
+            if (!farmSize || !cropYield || !incomeLevel) {
+                showMessage('Please fill in all fields!', 'error');
+                return;
+            }
+
+            try {
+                showMessage('Registration in progress... Please confirm the transaction in your wallet.', 'info');
+
+                const tx = await contract.registerFarmer(
+                    parseInt(farmSize),
+                    parseInt(cropYield),
+                    parseInt(incomeLevel)
+                );
+
+                showMessage('Transaction submitted. Waiting for confirmation...', 'info');
+                await tx.wait();
+
+                showMessage('Registration successful! Your data is now encrypted and stored securely.', 'success');
+
+                // Clear form
+                document.getElementById('farmSize').value = '';
+                document.getElementById('cropYield').value = '';
+                document.getElementById('incomeLevel').value = '';
+
+                // Refresh status
+                checkFarmerStatus();
+                loadDistributionInfo();
+
+            } catch (error) {
+                console.error('Registration error:', error);
+                showMessage('Registration failed: ' + error.message, 'error');
+            }
+        }
+
+        async function checkSubsidyStatus() {
+            if (!contract || !userAccount) {
+                showMessage('Please connect your wallet first!', 'error');
+                return;
+            }
+
+            try {
+                const profile = await contract.getFarmerProfile(userAccount);
+                const isRegistered = profile[0];
+                const hasReceivedSubsidy = profile[1];
+                const registrationTime = profile[2];
+
+                if (!isRegistered) {
+                    showMessage('You are not registered in the subsidy program.', 'info');
+                } else if (hasReceivedSubsidy) {
+                    showMessage('You have already received your subsidy for this period.', 'success');
+                } else {
+                    showMessage('You are registered but subsidy calculation is pending. Please wait for the distribution period.', 'info');
+                }
+
+            } catch (error) {
+                console.error('Error checking subsidy status:', error);
+                showMessage('Failed to check subsidy status: ' + error.message, 'error');
+            }
+        }
+
+        async function refreshData() {
+            if (userAccount) {
+                updateWalletInfo();
+                checkFarmerStatus();
+                await loadDistributionInfo();
+                await checkAdminStatus();
+                showMessage('Data refreshed successfully!', 'success');
+            } else {
+                showMessage('Please connect your wallet first!', 'error');
+            }
+        }
+
+        function showMessage(message, type) {
+            const messagesDiv = document.getElementById('messages');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+
+            messagesDiv.appendChild(alertDiv);
+
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        function showEnvSetup() {
+            const envInstructions = `
+📋 .env File Setup Instructions:
+
+1. Create a file named ".env" in the project root directory
+
+2. Add the following content:
+
+PRIVATE_KEY=your_metamask_private_key_here
+SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_INFURA_KEY
+
+3. Get your Private Key:
+   - Open MetaMask
+   - Click account menu → Account details → Export Private Key
+   - Enter password and copy the key
+
+4. Get Sepolia RPC URL:
+   - Go to https://infura.io
+   - Create free account
+   - Create new project
+   - Copy Sepolia endpoint URL
+
+5. Get Sepolia ETH:
+   - Visit https://sepoliafaucet.com
+   - Enter your wallet address
+   - Request test ETH
+
+⚠️ SECURITY WARNING:
+   - NEVER commit .env file to git
+   - NEVER share your private key
+   - Use only test accounts for development
+            `;
+
+            alert(envInstructions);
+        }
+
+        // Check if MetaMask is installed on page load
+        window.addEventListener('load', () => {
+            if (typeof window.ethereum === 'undefined') {
+                document.getElementById('connectCard').innerHTML = `
+                    <h2>❌ MetaMask Not Found</h2>
+                    <p style="margin-bottom: 20px; color: #7f8c8d;">Please install MetaMask browser extension to use this application.</p>
+                    <a href="https://metamask.io/download/" target="_blank" style="text-decoration: none;">
+                        <button class="btn">Install MetaMask</button>
+                    </a>
+                `;
+            }
+        });
+
+        // Listen for account changes
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', (accounts) => {
+                if (accounts.length > 0) {
+                    location.reload();
+                }
+            });
+
+            window.ethereum.on('chainChanged', () => {
+                location.reload();
+            });
+        }
+    </script>
+</body>
+</html>

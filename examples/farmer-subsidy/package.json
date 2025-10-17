@@ -1,22 +1,18 @@
 {
-  "name": "farmer-subsidy-example",
+  "name": "farmer-subsidy-fhe",
   "version": "1.0.0",
-  "description": "Privacy-preserving farmer subsidy system using FHEVM SDK",
-  "private": true,
+  "description": "Anonymous Farmer Subsidy System with FHE",
   "scripts": {
-    "compile": "hardhat compile",
-    "test": "hardhat test",
-    "deploy": "hardhat run scripts/deploy.js --network sepolia",
-    "interact": "hardhat run scripts/interact.js --network sepolia"
-  },
-  "dependencies": {
-    "fhevm-sdk": "workspace:*",
-    "@fhevm/solidity": "latest",
-    "ethers": "^6.9.0"
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run scripts/deploy.js --network sepolia",
+    "serve": "npx http-server public -p 1888 -c-1 --cors"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "hardhat": "^2.19.0",
     "dotenv": "^16.3.1"
+  },
+  "dependencies": {
+    "@fhevm/solidity": "latest"
   }
 }
