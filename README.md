@@ -27,7 +27,9 @@ Building FHE applications requires managing multiple dependencies, understanding
 - Offers **< 10 lines of code** to get started
 - Follows **Zama's official guidelines** for encryption/decryption flows
 
-🌐 **[Live Application](https://fhe-farmer-subsidy.vercel.app/)** | 📺 **[Download Demo Video demo.mp4]** | 
+🌐 **[Live Application](https://fhe-farmer-subsidy.vercel.app/)** 
+
+ 📺 **[Download Demo Video demo.mp4]** | 
 ---
 
 ## Quick Start
