@@ -29,7 +29,7 @@ Building FHE applications requires managing multiple dependencies, understanding
 
 🌐 **[Live Application](https://fhe-farmer-subsidy.vercel.app/)** 
 
- 📺 **[Download Demo Video demo.mp4]** | 
+ 📺 **[demo.mp4]** | 
 ---
 
 ## Quick Start
